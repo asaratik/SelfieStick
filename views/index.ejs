@@ -1,0 +1,51 @@
+<%- include('includes/header') %>
+
+<nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">SelfieStick</a>x  
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <%if(user.name==='User') { %><li><a href="/users/login">Login</a></li><%} else {%>
+            <li><a href="/users/logout">Logout</a></li> <%}%>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="starter-template">
+        <h1>Welcome to 4Millenials , <%=user.name%></h1>
+        <%if(user.name==='User') { %><p class="lead">Here are a few recommendations you might be intrested in</p><%} else {%>
+            <p class="lead">Here are a few recommendations trending in your network</p><%}%>
+      </div>
+
+      <div class="row">
+      <% for(var i=0; i<data.length; i++){ %>
+        <div class="col-md-4">
+            <img height="200px" width="200px" src="img/<%=data[i]._id%>.png"/>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><%-data[i].name%></strong></p>
+            <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$<%-data[i].price%></strong></p>
+
+            <%if(user.name!='User') { %>
+            <%if(data[i].friends!=0) { %>
+              <p>Great, <%-data[i].friends%> of your friends recommend this product !</p>
+            <%}}%>
+
+          <form method="post" action="/users/itemBought">
+            <input hidden="true" type="text" name="productname" value="<%-data[i].name%>">
+            <input hidden="true" type="text" name="productprice" value="<%-data[i].price%>">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button padding="50px" margin="50px" type="submit" class="btn btn-default">Buy</button>
+          </form>
+        </div>
+        <%}%>
+      </div>
+    </div>
+<%- include('includes/footer') %>
