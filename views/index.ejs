@@ -22,30 +22,17 @@
 
     <div class="container">
       <div class="starter-template">
-        <h1>Welcome to 4Millenials , <%=user.name%></h1>
-        <%if(user.name==='User') { %><p class="lead">Here are a few recommendations you might be intrested in</p><%} else {%>
-            <p class="lead">Here are a few recommendations trending in your network</p><%}%>
+        <h1>Welcome to SelfieStick</h1>
+        <%if(user.name==='User') { %>
+        <p class="lead">Here are the trending posts on the SelfieStick</p><%} else {%>
+        <p class="lead">Here are the trending posts in your network</p><%}%>
       </div>
 
       <div class="row">
-      <% for(var i=0; i<data.length; i++){ %>
-        <div class="col-md-4">
-            <img height="200px" width="200px" src="img/<%=data[i]._id%>.png"/>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><%-data[i].name%></strong></p>
-            <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$<%-data[i].price%></strong></p>
-
-            <%if(user.name!='User') { %>
-            <%if(data[i].friends!=0) { %>
-              <p>Great, <%-data[i].friends%> of your friends recommend this product !</p>
-            <%}}%>
-
-          <form method="post" action="/users/itemBought">
-            <input hidden="true" type="text" name="productname" value="<%-data[i].name%>">
-            <input hidden="true" type="text" name="productprice" value="<%-data[i].price%>">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button padding="50px" margin="50px" type="submit" class="btn btn-default">Buy</button>
-          </form>
+        <div class="col-md-12">
+          <h1 class="text-primary">Bought a new Samsung galaxy today !!</h1>
+          <img height="200px" width="200px" src="img/1.png"/>
         </div>
-        <%}%>
       </div>
     </div>
 <%- include('includes/footer') %>
