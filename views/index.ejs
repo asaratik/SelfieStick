@@ -28,6 +28,13 @@
         <p class="lead">Here are the trending posts in your network</p><%}%>
       </div>
 
+      <div>
+        <form method="POST" enctype="multipart/form-data" action="/users/upload">
+          <input type="file" name="file"><br>
+          <input class="btn btn-primary" type="submit" value="Post">
+        </form>
+      </div>
+
       <div class="row">
         <div class="col-md-12">
           <h1 class="text-primary">Bought a new Samsung galaxy today !!</h1>

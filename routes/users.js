@@ -5,7 +5,38 @@ var db = mongojs('walhack', ['users']);
 var bcrypt = require('bcryptjs');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
+var path = require('path');
+var fs = require('fs');
 const uuidV1 = require('uuid/v1');
+
+router.use(express.bodyParser(
+	{
+		uploadDir:'/uploads/images'
+	}));
+
+
+//File upload form logic
+router.post('/users/upload', function (req, res) {
+	console.log("Inside the upload post form !");
+	res.render('login');
+    /*var tempPath = req.files.file.path,
+        targetPath = path.resolve('./uploads/image.png');
+   	var fileExtension = path.extname(req.files.file.name).toLowerCase();
+    if (fileExtension === '.png' || fileExtension === 'jpg' || fileExtension === '.jpeg') {
+        fs.rename(tempPath, targetPath, function(err) 
+        {
+            if (err) throw err;
+            console.log("Upload completed!");
+        });
+    } else {
+        fs.unlink(tempPath, function () {
+            if (err) throw err;
+            console.error("Only png, jpeg and jpg files are allowed!");
+        });
+    }*/
+});
+
+
 
 
 //Login Page - Get
@@ -74,8 +105,6 @@ router.post('/register',function(req,res){
 				});
 			});
 		})
-
-		
 	}
 
 });
@@ -131,22 +160,5 @@ router.get('/logout',function(req,res){
 	req.flash('success','You have logged out');
 	res.redirect('/users/login');
 });
-
-
-router.post('/itemBought',function(req,res){
-	//Get form values
-	passport.authenticate('local',{
-		successRedirect: '/users/checkout'
-	});
-	
-	res.render('checkout');
-});
-
-router.post('/rating',function(req,res){
-	//Get form values
-	var rating = parseInt(req.body.group1);
-	res.redirect('/');
-});
-
 
 module.exports = router;
