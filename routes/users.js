@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var router = express();
 var mongojs = require('mongojs');
 var db = mongojs('walhack', ['users']);
 var bcrypt = require('bcryptjs');
@@ -11,16 +11,14 @@ const uuidV1 = require('uuid/v1');
 
 router.use(express.bodyParser(
 	{
-		uploadDir:'/uploads/images'
+		uploadDir:'./uploads/images'
 	}));
 
 
 //File upload form logic
 router.post('/users/upload', function (req, res) {
-	console.log("Inside the upload post form !");
-	res.render('login');
-    /*var tempPath = req.files.file.path,
-        targetPath = path.resolve('./uploads/image.png');
+    var tempPath = req.files.file.path,
+        targetPath = path.resolve('./uploads/images/image.png');
    	var fileExtension = path.extname(req.files.file.name).toLowerCase();
     if (fileExtension === '.png' || fileExtension === 'jpg' || fileExtension === '.jpeg') {
         fs.rename(tempPath, targetPath, function(err) 
@@ -33,7 +31,7 @@ router.post('/users/upload', function (req, res) {
             if (err) throw err;
             console.error("Only png, jpeg and jpg files are allowed!");
         });
-    }*/
+    }
 });
 
 
