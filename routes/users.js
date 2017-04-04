@@ -1,39 +1,11 @@
 var express = require('express');
-var router = express();
+var router = express.Router();
 var mongojs = require('mongojs');
-var db = mongojs('walhack', ['users']);
+var db = mongojs('selfieStick', ['users']);
 var bcrypt = require('bcryptjs');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
-var path = require('path');
-var fs = require('fs');
 const uuidV1 = require('uuid/v1');
-
-router.use(express.bodyParser(
-	{
-		uploadDir:'./uploads/images'
-	}));
-
-
-//File upload form logic
-router.post('/users/upload', function (req, res) {
-    var tempPath = req.files.file.path,
-        targetPath = path.resolve('./uploads/images/image.png');
-   	var fileExtension = path.extname(req.files.file.name).toLowerCase();
-    if (fileExtension === '.png' || fileExtension === 'jpg' || fileExtension === '.jpeg') {
-        fs.rename(tempPath, targetPath, function(err) 
-        {
-            if (err) throw err;
-            console.log("Upload completed!");
-        });
-    } else {
-        fs.unlink(tempPath, function () {
-            if (err) throw err;
-            console.error("Only png, jpeg and jpg files are allowed!");
-        });
-    }
-});
-
 
 
 
@@ -102,7 +74,7 @@ router.post('/register',function(req,res){
 					}
 				});
 			});
-		})
+		})	
 	}
 
 });
@@ -159,4 +131,23 @@ router.get('/logout',function(req,res){
 	res.redirect('/users/login');
 });
 
-module.exports = router;
+router.get('/circle',function(req,res){
+	
+	const collection = db.collection('users');
+
+	var returnvalue = collection.find({}).sort({ priority: -1 });
+			db.users.find().sort({priority:1},function(err,returnvalue){
+			if(err){
+				return console.dir(err);
+			}
+			//console.log(returnvalue);
+			res.render('circle',{
+				data: returnvalue
+			});
+		});
+});
+
+
+
+
+module.exports = router; 
