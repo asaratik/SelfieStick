@@ -6,7 +6,7 @@ var bcrypt = require('bcryptjs');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 const uuidV1 = require('uuid/v1');
-
+var fileupload = require('fileupload').createFileUpload('public/img').middleware;
 
 
 //Login Page - Get
@@ -53,7 +53,8 @@ router.post('/register',function(req,res){
 			email: email,
 			username:username,
 			password:password,
-			uuid:uuidV1()
+			uuid:uuidV1(),
+			circle:[]
 		}
 
 		bcrypt.genSalt(10,function(err,salt){
@@ -105,6 +106,10 @@ passport.use(new localStrategy(
 					return done(err);
 				}
 				if(isMatch){
+					passport.serializeUser(function(user, done) {
+  					done(null, user._id);
+
+				});
 					return done(null,user);
 				}
 				else{
@@ -121,7 +126,6 @@ router.post('/login',
                                    failureRedirect: '/users/login',
                                    failureFlash: 'Invalid Username or Password' }),
   function(req,res){
-  		console.log('Auth successful');
   		res.redirect('/');
   });
 
@@ -131,23 +135,54 @@ router.get('/logout',function(req,res){
 	res.redirect('/users/login');
 });
 
-router.get('/circle',function(req,res){
+router.get('/follow',function(req,res){
 	
-	const collection = db.collection('users');
+	db.users.update(
+		{ _id: req.user._id },
+   		{ $addToSet: {circle: req.param('id') } }
+	);
 
-	var returnvalue = collection.find({}).sort({ priority: -1 });
-			db.users.find().sort({priority:1},function(err,returnvalue){
-			if(err){
-				return console.dir(err);
-			}
-			//console.log(returnvalue);
-			res.render('circle',{
-				data: returnvalue
-			});
-		});
+	res.redirect('/users/circle');
 });
 
+router.post('/upload',fileupload,function(req,res){
+	//Insert post object into the database and upload file onto hdd
+	//db.post.insert();
 
+	req.flash('success','Message posted successfully');
+	res.redirect('/');
+});
 
+router.get('/unfollow',function(req,res){
+	
+	db.users.update(
+		{ _id: req.user._id },
+   		{ $pull: {circle: req.param('id') } }
+	);
+
+	res.redirect('/users/circle');
+});
+
+router.get('/circle',function(req,res){
+	var allUsers;
+	db.users.find({_id:{$ne: req.user._id}},function(err,allUsers){
+		if(err){
+			return console.dir(err);
+		}
+		//console.log(allUsers);
+		return allUsers;
+	});
+	
+	console.log(allUsers);
+
+	db.users.find({_id:{$ne: req.user._id}}).sort({priority:1},function(err,returnvalue){
+	if(err){
+		return console.dir(err);
+	}
+	res.render('circle',{
+		data: returnvalue
+	});
+	});
+});
 
 module.exports = router; 

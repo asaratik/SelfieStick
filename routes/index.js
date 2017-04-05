@@ -10,7 +10,7 @@ router.get('/',function(req,res){
 
 		if(req.isAuthenticated())
 		{	
-			res.render('index');
+			res.render('index',{ user : req.user});
 			/*
 			var returnvalue = collection.find({}).sort({ priority: -1 });
 			db.posts.find().sort({priority:1},function(err,returnvalue){
