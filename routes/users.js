@@ -7,7 +7,9 @@ var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 const uuidV1 = require('uuid/v1');
 var fileupload = require('fileupload').createFileUpload('public/img').middleware;
-
+var fs = require('fs');
+var formidable = require('formidable');
+var path = require('path');
 
 //Login Page - Get
 router.get('/login',function(req,res){
@@ -146,11 +148,43 @@ router.get('/follow',function(req,res){
 });
 
 router.post('/upload',fileupload,function(req,res){
-	//Insert post object into the database and upload file onto hdd
-	//db.post.insert();
+	var filePath=null;
+	console.log("Here");
+	  // create an incoming form object
+	  var form = new formidable.IncomingForm();
 
-	req.flash('success','Message posted successfully');
+	  // specify that we want to allow the user to upload multiple files in a single request
+	  form.multiples = true;
+
+	  // store all uploads in the /uploads directory
+	  form.uploadDir = path.join(__dirname, '../uploads');
+
+	  // every time a file has been uploaded successfully,
+	  // rename it to it's orignal name
+	  form.on('file', function(field, file) {
+	   console.log("File here" + path.join(form.uploadDir, file.name));
+	   filePath=path.join(form.uploadDir, file.name);
+		  fs.rename(file.path, path.join(form.uploadDir, file.name));
+	  });
+
+	  // log any errors that occur
+	  form.on('error', function(err) {
+	    console.log('An error has occured: \n' + err);
+	  });
+
+	  // once all the files have been uploaded, send a response to the client
+	  form.on('end', function() {
+	  	console.log('got path'+filePath);
+		  req.flash('success','Message posted successfully');
 	res.redirect('/');
+		 // res.end('success');
+	  });
+	  
+
+	  // parse the incoming request containing the form data
+	  form.parse(req);
+
+	
 });
 
 router.get('/unfollow',function(req,res){

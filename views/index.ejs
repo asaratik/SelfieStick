@@ -34,16 +34,16 @@
       </div>
       <%- messages() %>
       <div>
-          <form action="/users/upload" method="POST">
-            <div class="form-group">
-              <input type="text" class="form-control" id="asset_message" placeholder="What's up with you today">
-            </div>
-            <div class="form-group">
-              <input type="file" id="asset_image">
+      <form action="/users/upload" method="post" enctype="multipart/form-data">
+  <input type="text" class="form-control" id="asset_message" placeholder="What's up with you today"><br>
+  <input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>
+<div class="form-group">
+      
               <p class="help-block">Only image files accepted.</p>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
+<input type="submit">
+</form>
+          
       </div>
     </div>
 
