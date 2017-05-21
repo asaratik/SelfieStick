@@ -22,27 +22,15 @@ router.get('/',function(req,res){
 				data: returnvalue
 			});
 		});*/
-var myPosts;
-		db.users.find( {_id: req.user._id}).sort({priority:1},function(err,returnvalue){
+	var myPosts;		
+		db.posts.find( {user_id: req.user.uuid}).sort({priority:1},function(err,returnvalue){
 	if(err){
 		return console.dir(err);
 	}
-
-	var followers = returnvalue[0].circle;
-	console.log("My posts: "+JSON.stringify(returnvalue[0].posts));
-	db.users.find( {uuid: { $in: followers} },function(err,returnvalu){
-	if(err){
-		return console.dir(err);
-	}
-	//res.render('index',{ user : req.user});
-	res.render('index', { user : req.user, data : returnvalu});});
-
-	//res.render('index',{ user : req.user});
+	console.log("My posts: "+JSON.stringify(returnvalue));
+	res.render('index', { user : req.user, data : returnvalue});});
+	//var followers = returnvalue[0].circle;
 	
-	});
-		
-
-		
 
 		}else{
 			  res.redirect('/users/login');
