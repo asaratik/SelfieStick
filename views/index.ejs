@@ -1,5 +1,9 @@
 <%- include('includes/header') %>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <div class="container">
     <nav class="navbar navbar-default">
@@ -35,16 +39,28 @@
       </div>
       <%- messages() %>
       <div>
-      <form action="/users/upload" method="post" enctype="multipart/form-data">
-  <input type="text" class="form-control" id="asset_message" placeholder="What's up with you today"><br>
-  <input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>
-<div class="form-group">
+      <form action="/users/upload" method="POST" encType="multipart/form-data">
+        <div class="form-group">
+          <input type="text" class="form-control" name="asset_message" placeholder="What's up with you today" required autofocus>
+        </div>
+        <div class="form-group">
+          <input type="file" name="asset_image">
+          <p class="help-block">Only image files accepted.</p>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <br>
+      <% for (var abc in data) {%>
+      <% for (var post in data[abc].posts) {%>
+          <p><%= data[abc].posts[post].message%></p>
+          <img src=<%= data[abc].posts[post].filepath%> height="42" width="42">
+         <br>
+        <a href="/users/likePost?id=<%-data[abc].posts[post].post_id%>"> <span class="glyphicon glyphicon-heart"> </a> </span><%= data[abc].posts[post].likes %>
+          <% }%>  
+      <% }%>
       
-              <p class="help-block">Only image files accepted.</p>
-            </div>
-<input type="submit">
-</form>
-          
+          <br>
+
       </div>
     </div>
 

@@ -35,7 +35,7 @@ var myPosts;
 		return console.dir(err);
 	}
 	//res.render('index',{ user : req.user});
-	res.render('index', { user : req.user});});
+	res.render('index', { user : req.user, data : returnvalu});});
 
 	//res.render('index',{ user : req.user});
 	

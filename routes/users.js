@@ -170,7 +170,7 @@ router.post('/upload', fileupload, function(req, res) {
     /*var message = form.on('field', function (field, value) {
         console.log(value);
     });*/
-
+	console.log("innnnnnn");
     form.on('field', function(field, value) {
         fileParser(value);
     });
@@ -196,18 +196,17 @@ router.post('/upload', fileupload, function(req, res) {
             var randFilename = uuidV1() + "." + file.name.split(".")[1];
             fs.rename(file.path, path.join(form.uploadDir, randFilename));
             var finalPath = form.uploadDir + "\\" + randFilename;
-
+            console.log("In here working");
             postToDB(value, finalPath);
         });
     }
-
-    function postToDB(value, finalPath) {
-
+       function postToDB(value, finalPath) {
+    	console.log("In here working");
         var comment = {};
         var post = {
             post_id: uuidV1(),
             message: value,
-            filepath: filePath,
+            filepath: finalPath,
             comments: comment,
             likes: 0,
             dateTime: new Date("<YYYY-mm-ddTHH:MM:ss>")
@@ -217,9 +216,13 @@ router.post('/upload', fileupload, function(req, res) {
         }, {
             $addToSet: {
                 posts: post
-            }
+            }},function(err,returnvalue){
+	if(err){
+		return console.dir(err);
+	}
         });
     }
+
 
     // log any errors that occur
     form.on('error', function(err) {
@@ -230,7 +233,9 @@ router.post('/upload', fileupload, function(req, res) {
     // once all the files have been uploaded, send a response to the client
     form.on('end', function() {
         req.flash('success', 'Message posted successfully');
-        res.redirect('/');
+	res.redirect('/');
+     
+        
     });
 
     // parse the incoming request containing the form data
@@ -239,6 +244,16 @@ router.post('/upload', fileupload, function(req, res) {
 });
 
 
+router.get('/likePost',function(req,res){
+	
+	db.users.update(
+		{ _id: req.user._id },
+   		{ $pull: {circle: req.param('id') } }
+	);
+
+
+	res.redirect('/users/myFollowers');
+});
 
 
 router.get('/unfollow',function(req,res){
