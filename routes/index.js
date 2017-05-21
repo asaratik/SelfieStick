@@ -10,7 +10,7 @@ router.get('/',function(req,res){
 
 		if(req.isAuthenticated())
 		{	
-			res.render('index',{ user : req.user});
+			
 			/*
 			var returnvalue = collection.find({}).sort({ priority: -1 });
 			db.posts.find().sort({priority:1},function(err,returnvalue){
@@ -22,6 +22,28 @@ router.get('/',function(req,res){
 				data: returnvalue
 			});
 		});*/
+var myPosts;
+		db.users.find( {_id: req.user._id}).sort({priority:1},function(err,returnvalue){
+	if(err){
+		return console.dir(err);
+	}
+
+	var followers = returnvalue[0].circle;
+	console.log("My posts: "+JSON.stringify(returnvalue[0].posts));
+	db.users.find( {uuid: { $in: followers} },function(err,returnvalu){
+	if(err){
+		return console.dir(err);
+	}
+	//res.render('index',{ user : req.user});
+	res.render('index', { user : req.user});});
+
+	//res.render('index',{ user : req.user});
+	
+	});
+		
+
+		
+
 		}else{
 			  res.redirect('/users/login');
 		}

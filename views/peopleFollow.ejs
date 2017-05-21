@@ -1,0 +1,48 @@
+<%- include('includes/header') %>
+<div class="container">
+	<nav class="navbar navbar-default">
+        <div class="container-fluid">
+          	<div class="navbar-header">
+            	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">SelfieStick</a>
+            </div>
+            
+            <div id="navbar" class="navbar-collapse collapse">
+            	<ul class="nav navbar-nav">
+	                <li ><a href="#">Home</a></li>
+	                <li><a href="#">About</a></li>
+	                <li><a href="#">Contact</a></li>
+            	</ul>
+            
+            	<ul class="nav navbar-nav navbar-right">
+	            	<li><a href="/"><%=user.username%><span class="sr-only">(current)</span></a></li>
+	            	<li class="active"><a href="/users/peopleFollow">Follow</a></li>
+                    <li ><a href="/users/myFollowers">My Followers</a></li>
+	            	
+	            	<li><a href="/users/logout">Logout</a></li>
+            	</ul>
+        	</div><!--/.nav-collapse -->
+    	</div><!--/.container-fluid -->
+    </nav>
+      
+	<div class="starter-template">
+    	<h1>Here are a few recommendations</h1><br>
+  	</div>
+
+	<% for(var i=0; i<data.length; i++){ %>
+		<div>
+			<strong><%-data[i].username%></strong>
+
+			<a href="/users/follow?id=<%-data[i].uuid%>">follow</a>
+			
+		</div>
+		<br>
+	<%}%>
+</div>
+
+<%- include('includes/footer') %>

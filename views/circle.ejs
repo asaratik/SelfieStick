@@ -21,7 +21,8 @@
             
             	<ul class="nav navbar-nav navbar-right">
 	            	<li><a href="/"><%=user.username%><span class="sr-only">(current)</span></a></li>
-	            	<li class="active"><a href="/users/circle">Circle</a></li>
+	            	<li class="active"><a href="/users/peopleFollow">Follow</a></li>
+                    <li class="active"><a href="/users/myFollowers">My Followers</a></li>
 	            	
 	            	<li><a href="/users/logout">Logout</a></li>
             	</ul>
@@ -36,8 +37,9 @@
 	<% for(var i=0; i<data.length; i++){ %>
 		<div>
 			<strong><%-data[i].username%></strong>
-			<a href="/users/follow?id=<%-data[i]._id%>">follow</a>
-			<a href="/users/unfollow?id=<%-data[i]._id%>">unfollow</a>
+
+			<a href="/users/follow?id=<%-data[i].uuid%>">follow</a>
+			<a href="/users/unfollow?id=<%-data[i].uuid%>">unfollow</a>
 		</div>
 		<br>
 	<%}%>

@@ -22,64 +22,64 @@ router.get('/register',function(req,res){
 });
 
 //Register - POST
-router.post('/register',function(req,res){
-	//Get form values
-	var name = req.body.name;
-	var email = req.body.email;
-	var username = req.body.username;
-	var password = req.body.password;
-	var password2 = req.body.password2;
+router.post('/register', function(req, res) {
+    //Get form values
+    var name = req.body.name;
+    var email = req.body.email;
+    var username = req.body.username;
+    var password = req.body.password;
+    var password2 = req.body.password2;
 
-	//Validation
-	req.checkBody('name','Name field is required').notEmpty();
-	req.checkBody('email','Email field is required').notEmpty();
-	req.checkBody('email','Please use a valid email').isEmail();
-	req.checkBody('username','Username field is required').notEmpty();
-	req.checkBody('password','Password field is required').notEmpty();
-	req.checkBody('password2','Passwords do not match').equals(req.body.password2);
+    //Validation
+    req.checkBody('name', 'Name field is required').notEmpty();
+    req.checkBody('email', 'Email field is required').notEmpty();
+    req.checkBody('email', 'Please use a valid email').isEmail();
+    req.checkBody('username', 'Username field is required').notEmpty();
+    req.checkBody('password', 'Password field is required').notEmpty();
+    req.checkBody('password2', 'Passwords do not match').equals(req.body.password2);
 
-	var errors = req.validationErrors();
+    var errors = req.validationErrors();
 
-	if(errors){
-		res.render('register',{
-			errors: errors,
-			name: name,
-			email: email,
-			username:username,
-			password:password,
-			password2:password2
-		});
-	}else{
-		var newUser = {
-			name: name,
-			email: email,
-			username:username,
-			password:password,
-			uuid:uuidV1(),
-			circle:[]
-		}
+    if (errors) {
+        res.render('register', {
+            errors: errors,
+            name: name,
+            email: email,
+            username: username,
+            password: password,
+            password2: password2
+        });
+    } else {
+        var newUser = {
+            name: name,
+            email: email,
+            username: username,
+            password: password,
+            uuid: uuidV1(),
+            circle: [],
+            posts: []
+        }
 
-		bcrypt.genSalt(10,function(err,salt){
-			bcrypt.hash(newUser.password,salt,function(err,hash){
-				newUser.password = hash;
-				db.users.insert(newUser,function(err,doc){
-				if(err){
-					res.send(err);
-				}else{
-					console.log('user added...');
+        bcrypt.genSalt(10, function(err, salt) {
+            bcrypt.hash(newUser.password, salt, function(err, hash) {
+                newUser.password = hash;
+                db.users.insert(newUser, function(err, doc) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        console.log('user added...');
 
-					//Success message
-					req.flash('success','You are successfully registered, login to continue..');
-					
-					//Redirect after register
-					res.location('/');
-					res.redirect('/');
-					}
-				});
-			});
-		})	
-	}
+                        //Success message
+                        req.flash('success', 'You are successfully registered, login to continue..');
 
+                        //Redirect after register
+                        res.location('/');
+                        res.redirect('/');
+                    }
+                });
+            });
+        })
+    }
 });
 
 passport.serializeUser(function(user, done) {
@@ -138,54 +138,108 @@ router.get('/logout',function(req,res){
 });
 
 router.get('/follow',function(req,res){
-	
+	console.log("Following this uid: "+req.param('uuid'))
 	db.users.update(
 		{ _id: req.user._id },
    		{ $addToSet: {circle: req.param('id') } }
 	);
 
-	res.redirect('/users/circle');
+	res.redirect('/users/peopleFollow');
 });
 
-router.post('/upload',fileupload,function(req,res){
-	var filePath=null;
-	console.log("Here");
-	  // create an incoming form object
-	  var form = new formidable.IncomingForm();
+router.post('/upload', fileupload, function(req, res) {
+    var filePath = null;
+    // create an incoming form object
+    var form = new formidable.IncomingForm();
 
-	  // specify that we want to allow the user to upload multiple files in a single request
-	  form.multiples = true;
+    var vision = require('google-vision-api-client');
+    var requtil = vision.requtil;
 
-	  // store all uploads in the /uploads directory
-	  form.uploadDir = path.join(__dirname, '../uploads');
+    //Prepare your service account from trust preview certificated project
+    var jsonfile = './routes/GCloud_Vision.json';
 
-	  // every time a file has been uploaded successfully,
-	  // rename it to it's orignal name
-	  form.on('file', function(field, file) {
-	   console.log("File here" + path.join(form.uploadDir, file.name));
-	   filePath=path.join(form.uploadDir, file.name);
-		  fs.rename(file.path, path.join(form.uploadDir, file.name));
-	  });
+    // specify that we want to allow the user to upload multiple files in a single request
+    form.multiples = true;
 
-	  // log any errors that occur
-	  form.on('error', function(err) {
-	    console.log('An error has occured: \n' + err);
-	  });
+    // store all uploads in the /uploads directory
+    form.uploadDir = path.join(__dirname, '../uploads');
 
-	  // once all the files have been uploaded, send a response to the client
-	  form.on('end', function() {
-	  	console.log('got path'+filePath);
-		  req.flash('success','Message posted successfully');
-	res.redirect('/');
-		 // res.end('success');
-	  });
-	  
+    //Initialize the api
+    //vision.init(jsonfile);
 
-	  // parse the incoming request containing the form data
-	  form.parse(req);
+    /*var message = form.on('field', function (field, value) {
+        console.log(value);
+    });*/
 
-	
+    form.on('field', function(field, value) {
+        fileParser(value);
+    });
+
+    function fileParser(value) {
+
+        form.on("file", function(field, file) {
+
+            filePath = path.join(form.uploadDir, file.name);
+            /*//Cloud vision call
+            var d = requtil.createRequests().addRequest(
+            requtil.createRequest(filePath)
+                .withFeature('FACE_DETECTION', 3)
+                .withFeature('LABEL_DETECTION', 2)
+                .build());
+     
+            //Do query to the api server
+            vision.query(d, function(e, r, d){
+                if(e) console.log('ERROR:', e);
+                console.log(JSON.stringify(d));
+            });*/
+
+            var randFilename = uuidV1() + "." + file.name.split(".")[1];
+            fs.rename(file.path, path.join(form.uploadDir, randFilename));
+            var finalPath = form.uploadDir + "\\" + randFilename;
+
+            postToDB(value, finalPath);
+        });
+    }
+
+    function postToDB(value, finalPath) {
+
+        var comment = {};
+        var post = {
+            post_id: uuidV1(),
+            message: value,
+            filepath: filePath,
+            comments: comment,
+            likes: 0,
+            dateTime: new Date("<YYYY-mm-ddTHH:MM:ss>")
+        }
+        db.users.update({
+            _id: req.user._id
+        }, {
+            $addToSet: {
+                posts: post
+            }
+        });
+    }
+
+    // log any errors that occur
+    form.on('error', function(err) {
+        console.log('An error has occured: \n' + err);
+    });
+
+
+    // once all the files have been uploaded, send a response to the client
+    form.on('end', function() {
+        req.flash('success', 'Message posted successfully');
+        res.redirect('/');
+    });
+
+    // parse the incoming request containing the form data
+    form.parse(req);
+
 });
+
+
+
 
 router.get('/unfollow',function(req,res){
 	
@@ -194,29 +248,81 @@ router.get('/unfollow',function(req,res){
    		{ $pull: {circle: req.param('id') } }
 	);
 
-	res.redirect('/users/circle');
+
+	res.redirect('/users/myFollowers');
 });
 
-router.get('/circle',function(req,res){
-	var allUsers;
-	db.users.find({_id:{$ne: req.user._id}},function(err,allUsers){
-		if(err){
-			return console.dir(err);
-		}
-		//console.log(allUsers);
-		return allUsers;
-	});
+router.get('/myFollowers',function(req,res){
 	
-	console.log(allUsers);
-
-	db.users.find({_id:{$ne: req.user._id}}).sort({priority:1},function(err,returnvalue){
+db.users.find({_id: req.user._id}).sort({priority:1},function(err,returnvalue){
 	if(err){
 		return console.dir(err);
 	}
-	res.render('circle',{
-		data: returnvalue
+	var followers = returnvalue[0].circle;
+	var arr=[];
+	//for(follower in followers){
+	//	console.log(followers[follower]);
+	//	abc = "ObjectId('"+followers[follower]+"')";
+	//	arr.push("ObjectId('"+followers[follower]+"')");	
+	//	//var obj= {"$oid": followers[follower]};
+	//	//arr.push(obj);
+	//}
+	//console.log("FOlooooooooooooooooo---- "+ JSON.stringify(arr));
+	//console.log("Cooooooooooo---"+ JSON.stringify(returnvalue[0].circle));
+	//db.users.find( { _id: { $nin: returnvalue[0].circle } } )
+	//db.users.find({_id: req.user._id}).sort({priority:1}
+	db.users.find( {uuid: { $in: followers} } ,function(err,returnvalu){
+	if(err){
+		return console.dir(err);
+	}
+	console.log("Followers: "+ JSON.stringify(returnvalu));
+	res.render('myFollowers',{
+		data: returnvalu
 	});
 	});
+	});
+
+
+	
+	
+});
+
+
+
+
+router.get('/peopleFollow',function(req,res){
+	
+db.users.find({_id: req.user._id}).sort({priority:1},function(err,returnvalue){
+	if(err){
+		return console.dir(err);
+	}
+	var followers = returnvalue[0].circle;
+	var arr=[];
+	//for(follower in followers){
+	//	console.log(followers[follower]);
+	//	abc = "ObjectId('"+followers[follower]+"')";
+	//	arr.push("ObjectId('"+followers[follower]+"')");	
+	//	//var obj= {"$oid": followers[follower]};
+	//	//arr.push(obj);
+	//}
+	//console.log("FOlooooooooooooooooo---- "+ JSON.stringify(arr));
+	//console.log("Cooooooooooo---"+ JSON.stringify(returnvalue[0].circle));
+	//db.users.find( { _id: { $nin: returnvalue[0].circle } } )
+	//db.users.find({_id: req.user._id}).sort({priority:1}
+	db.users.find( {uuid: { $nin: followers} } ,function(err,returnvalu){
+	if(err){
+		return console.dir(err);
+	}
+	console.log("Followers: "+ JSON.stringify(returnvalu));
+	res.render('peopleFollow',{
+		data: returnvalu
+	});
+	});
+	});
+
+
+	
+	
 });
 
 module.exports = router; 
