@@ -209,14 +209,14 @@ router.post('/upload', fileupload, function(req, res) {
                     fs.rename(file.path, path.join(form.uploadDir, randFilename));
                     var finalPath = form.uploadDir + "\\" + randFilename;
                     console.log("In here working");
-                    postToDB(value, finalPath);
+                    postToDB(value, randFilename);
                 });
             }
 
             function postToDB(value, finalPath) {
 
-                var comment = {};
-                var likes = {};
+                var comment = [];
+                var likes = [];
 
                 var post = {
                     user_name: req.user.name,
@@ -260,16 +260,26 @@ router.post('/upload', fileupload, function(req, res) {
 
             router.get('/likePost', function(req, res) {
 
-                db.users.update({
-                    _id: req.user._id
-                }, {
-                    $pull: {
-                        circle: req.param('id')
-                    }
-                });
 
 
-                res.redirect('/users/myFollowers');
+
+
+                db.posts.update({
+        post_id: req.param('postId')
+    }, {
+        $addToSet: {
+            likes: req.param('userId')
+        }
+    }, function(err, returnvalue){
+        if(err) {return console.dir(err);}
+        else{
+            res.redirect('/');    
+        }
+        
+    });
+
+
+                
             });
 
 
@@ -327,8 +337,28 @@ router.post('/upload', fileupload, function(req, res) {
 
             });
 
+            router.get('/comment', function(req, res) {
+
+               console.log("commenting with post Id "+ req.param('postId')+ " and comment is: "+req.param('comment')) 
+              var commentObj={
+                "message":req.param('comment'), "userName": req.param('userName')};
+              db.posts.update({
+        post_id: req.param('postId')
+    }, {
+        $addToSet: {
+            comments: commentObj
+        }
+    }, function(err, returnvalue){
+        if(err) {return console.dir(err);}
+        else{
+            res.redirect('/');    
+        }
+        
+    });
 
 
+            });
+        
 
             router.get('/peopleFollow', function(req, res) {
 

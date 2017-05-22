@@ -20,17 +20,31 @@
       <br>
       
       <% for (var abc in data) {%>
+          <form action="/users/comment" method="GET" >
           <p><i>  <%= data[abc].user_name %></p>
           <p><%= data[abc].message%></p>
-          <img src=<%= data[abc].filepath%> height="42" width="42">
+          <img src="<%= data[abc].filepath%>" height="42" width="42">
          <br>
-        <a href="/users/likePost?id=<%-data[abc].post_id%>"> <span class="glyphicon glyphicon-heart"> </a> </span><%= data[abc].likes %>
-            
+
+
+        <a href="/users/likePost?userId=<%-user.uuid%>&postId=<%-data[abc].post_id%>"> <span class="glyphicon glyphicon-heart"> </a> <%= data[abc].likes.length %> </span>
+        <br><br>
+        <%  for (var i in data[abc].comments ){%>
+        <p> <%= data[abc].comments[i].userName%> <input type="text" readonly value='<%=data[abc].comments[i].message%>'> </p>
+        <br>
+        <% }%>
+        
+        <input type="hidden" name="postId" value="<%-data[abc].post_id%>">
+         <input type="hidden" name="userName" value="<%-user.name%>">
+         <input type = "text" name="comment" placeholder="Your comment">  
+         <input type = "submit" > 
+         </form>
       <% }%>
       
           <br>
 
       </div>
     </div>
+    <br>
 
 <%- include('includes/footer') %>
