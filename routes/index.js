@@ -52,8 +52,6 @@ router.get('/',function(req,res){
 	//var followers = returnvalue[0].circle;
                 });
 
-
-
 	
 	//var followers = returnvalue[0].circle;
 

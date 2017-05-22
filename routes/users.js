@@ -219,6 +219,7 @@ router.post('/upload', fileupload, function(req, res) {
                 var likes = {};
 
                 var post = {
+                    user_name: req.user.name,
                     user_id: req.user.uuid,
                     post_id: uuidV1(),
                     message: value,
