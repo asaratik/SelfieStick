@@ -32,7 +32,8 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
-uploads/*
+routes/GCloud_Vision.json
+public/img/*
 
 # Optional npm cache directory
 .npm
