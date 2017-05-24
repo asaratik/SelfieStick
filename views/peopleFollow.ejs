@@ -6,12 +6,14 @@
   	</div>
 
 	<% for(var i=0; i<data.length; i++){ %>
-		<div>
-			<strong><%-data[i].username%></strong>
-
-			<a href="/users/follow?id=<%-data[i].uuid%>">follow</a>
-			
-		</div>
+			<%if(data[i].username != user.username){%>
+				<div class="col-md-4">
+					<strong><%-data[i].username%></strong>
+				</div>
+				<div class="col-md-4">
+					<a href="/users/follow?id=<%-data[i].uuid%>">follow</a>
+				</div>
+			<%}%>
 		<br>
 	<%}%>
 </div>

@@ -4,38 +4,79 @@
    <h1>Welcome, <%=user.username%></h1>
 </div>
 <%- messages() %>
-<div>
+<div style="background:beige"> 
+    <div class="indexPosts">
    <form action="/users/upload" method="POST" encType="multipart/form-data">
       <div class="form-group">
          <input type="text" class="form-control" name="asset_message" placeholder="What's up with you today" required autofocus>
       </div>
-      <div class="form-group">
-         <input type="file" name="asset_image">
-         <p class="help-block">Images files only!</p>
+      <div class="form-group" style="width:88%;position:relative;float:left">
+         <input type="file" name="asset_image" class="btn btn-default">
+         <p class="help-block">Image files only!</p>
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
+      <button type="submit" class="btn btn-default" style="float:left;position:relative;margin-left:531px;margin-top:-82px">Submit</button>
    </form>
    <br>
+ 
    <% for (var abc in data) {%>
-   <form action="/users/comment" method="GET" >
-      <p><i>  <%= data[abc].user_name %></p>
-      <p><%= data[abc].message%></p>
-      <img src="<%= data[abc].filepath%>" height="42" width="42">
+   <form action="/users/comment" method="GET"  style="border-radius: 10px;background: bisque;margin-top:50px" >
+      <h2> Posted by: <%= data[abc].user_name %> </h2>
+      <img src="<%= data[abc].filepath%>" height="70" width="70" style="margin-left:55px;width:80%;height:80%">
+      <p style="margin-top: 30px;
+    margin-left: 121px;
+    font-size: 21px;
+    word-wrap: break-word;
+    width: 350px;
+    float:left;
+    position:relative"><%= data[abc].message%></p>
       <br>
-      <a href="/users/likePost?userId=<%-user.uuid%>&postId=<%-data[abc].post_id%>"> <span class="glyphicon glyphicon-heart"> </a> <%= data[abc].likes.length %> </span>
-      <br><br>
-      <%  for (var i in data[abc].comments ){%>
-      <p> <%= data[abc].comments[i].userName%> <input type="text" readonly value='<%=data[abc].comments[i].message%>'> </p>
-      <br>
+        <div style="float: left; position: relative; margin-top: 40px">
+        <a href="/users/likePost?userId=<%-user.uuid%>&postId=<%-data[abc].post_id%>"> 
+        <span class="glyphicon glyphicon-heart"> </a> <%= data[abc].likes.length %> </span>
+     
+        </div>
+ 
+        <input type = "text" name="comment" id="<%-data[abc].post_id%>" required placeholder="Comment on the post" style= "width: 68%; margin-left: 65px; margin-right: 10px;border-radius:2px;height:70px">
+        <input class="btn btn-xs btn-primary" type = "submit" style= "wheight:37px">
+      
+       <div style="margin-left: 65px;font-size:21px"> 
+      Here are some suggestions:<br>
+      <% var post_id = data[abc].post_id %>
+
+      <%  for (var j in data[abc].tags[0].labelAnnotations){%>
+      <% var post_id = data[abc].post_id+"#"+data[abc].tags[0].labelAnnotations[j].description%>
+        <a class="btn btn-xs btn-info" id="<%=post_id%>" onclick="myFunction(this.id)"><%= data[abc].tags[0].labelAnnotations[j].description%></a>&nbsp;
       <% }%>
+    </div>
+    <br><br>
+      <div style="margin-left: 65px;font-size:21px;margin-bottom:40px">
+      <%  for (var i in data[abc].comments ){%>
+       <span> <%= data[abc].comments[i].userName%></span> : <span> <%=data[abc].comments[i].message%> </span><br>
+      <% }%>
+      </div> 
       <input type="hidden" name="postId" value="<%-data[abc].post_id%>">
       <input type="hidden" name="userName" value="<%-user.name%>">
-      <input type = "text" name="comment" placeholder="Your comment">  
-      <input type = "post"> 
+      
+     
    </form>
    <% }%>
    <br>
+ </div>
 </div>
 </div>
 <br>
+<script>
+    function myFunction(description) {
+  
+    var post = description.split("#");
+
+    var myDiv=document.getElementById(post[0]).value;
+    
+    myDiv=myDiv + " #" +post[1];
+
+    document.getElementById(post[0]).value=myDiv;
+
+   }
+
+</script>
 <%- include('includes/footer') %>

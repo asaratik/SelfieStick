@@ -6,10 +6,10 @@
   	</div>
 
 	<% for(var i=0; i<data.length; i++){ %>
-		<div>
+		<div class="col-md-4">
 			<strong><%-data[i].username%></strong>
-
-			
+		</div>
+		<div class="col-md-4">
 			<a href="/users/unfollow?id=<%-data[i].uuid%>">unfollow</a>
 		</div>
 		<br>
